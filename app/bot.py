@@ -1,9 +1,9 @@
-from aiogram import Bot, Dispatcher
-from aiogram.enums import ParseMode
-from aiogram.types import Message
 import asyncio
-
+import logging
+from aiogram import Bot, Dispatcher
+from aiogram.types import Message
 from app.config import BOT_TOKEN
+from app.utils.database import init_db
 
 # Инициализация бота и диспетчера
 bot = Bot(token=BOT_TOKEN)
@@ -18,6 +18,13 @@ async def start(message: Message):
 
 # Основная функция для запуска бота
 async def main():
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+    )
+    print("Инициализация базы данных...")
+    await init_db()
+    print("База данных готова!")
     print("Бот запущен...")
     await dp.start_polling(bot)
 
