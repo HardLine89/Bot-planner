@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from app.config import DATABASE_URL
@@ -8,7 +10,7 @@ engine = create_async_engine(DATABASE_URL, echo=True)
 
 # Настраиваем сессию
 async_session = async_sessionmaker(
-    bind=engine, expire_on_commit=False, class_=AsyncSession
+    bind=engine, expire_on_commit=False, class_=AsyncSession, autoflush=False
 )
 
 
@@ -18,9 +20,10 @@ async def init_db():
 
 
 # Функция для получения сессии
-async def get_session() -> AsyncSession:
-    async with async_session() as session:
-        yield session
+@asynccontextmanager
+async def get_session():
+    async with async_session() as session:  # Здесь создаем сессию
+        yield session  # Возвращаем объект сессии
 
 
 # Функция для получения или создания пользователя
